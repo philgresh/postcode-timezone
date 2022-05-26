@@ -1,0 +1,53 @@
+id,country_id,abbr,name
+1,1,AK,Alaska
+2,1,AL,Alabama
+3,1,AR,Arkansas
+4,1,AZ,Arizona
+5,1,CA,California
+6,1,CO,Colorado
+7,1,CT,Connecticut
+8,1,DC,District of Columbia
+9,1,DE,Delaware
+10,1,FL,Florida
+11,1,GA,Georgia
+12,1,HI,Hawaii
+13,1,IA,Iowa
+14,1,ID,Idaho
+15,1,IL,Illinois
+16,1,IN,Indiana
+17,1,KS,Kansas
+18,1,KY,Kentucky
+19,1,LA,Louisiana
+20,1,MA,Massachusetts
+21,1,MD,Maryland
+22,1,ME,Maine
+23,1,MH,Marshall Islands
+24,1,MI,Michigan
+25,1,MN,Minnesota
+26,1,MO,Missouri
+27,1,MS,Mississippi
+28,1,MT,Montana
+29,1,NC,North Carolina
+30,1,ND,North Dakota
+31,1,NE,Nebraska
+32,1,NH,New Hampshire
+33,1,NJ,New Jersey
+34,1,NM,New Mexico
+35,1,NV,Nevada
+36,1,NY,New York
+37,1,OH,Ohio
+38,1,OK,Oklahoma
+39,1,OR,Oregon
+40,1,PA,Pennsylvania
+41,1,RI,Rhode Island
+42,1,SC,South Carolina
+43,1,SD,South Dakota
+44,1,TN,Tennessee
+45,1,TX,Texas
+46,1,UT,Utah
+47,1,VA,Virginia
+48,1,VT,Vermont
+49,1,WA,Washington
+50,1,WI,Wisconsin
+51,1,WV,West Virginia
+52,1,WY,Wyoming
