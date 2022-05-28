@@ -5,12 +5,13 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/blockloop/scan"
 	_ "github.com/mattn/go-sqlite3" // Initialize go-sqlite3 library
 	"github.com/philgresh/zipcode-timezone/internal/model"
 )
 
 const (
-	file           = "../data/postal-codes-US/free_zipcode_data.sqlite3"
+	file           = "../data/db.sqlite3"
 	commonErrorStr = "unable to get postcode from DB"
 	getPostcode    = `
 		SELECT z.id,
@@ -41,53 +42,19 @@ func GetPostcode(ctx context.Context, postcodeArg string) (*model.Postcode, erro
 		return nil, fmt.Errorf("%s, database error: %s", commonErrorStr, err)
 	}
 
-	var (
-		ID        string
-		Code      string
-		StateID   int32
-		Accuracy  sql.NullInt16
-		AreaCode  sql.NullString
-		City      sql.NullString
-		Lat       sql.NullFloat64
-		Lon       sql.NullFloat64
-		StateAbbr sql.NullString
-		StateName sql.NullString
-	)
-	row := db.QueryRowContext(ctx, getPostcode, postcodeArg)
-	if row.Err() != nil {
+	rows, err := db.QueryContext(ctx, getPostcode, postcodeArg)
+	if err != nil {
 		return nil, fmt.Errorf("%s, query row error: %s", commonErrorStr, err)
 	}
 
-	if err = row.Scan(
-		&ID,
-		&Code,
-		&StateID,
-		&Accuracy,
-		&AreaCode,
-		&City,
-		&Lat,
-		&Lon,
-		&StateAbbr,
-		&StateName,
-	); err != nil {
+	var postcode model.Postcode
+	if err = scan.Row(&postcode, rows); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("%s, postcode does not exist", commonErrorStr)
 		}
 		return nil, fmt.Errorf("%s, query row scan error: %s", commonErrorStr, err)
 	}
-
-	return &model.Postcode{
-		ID:      ID,
-		Code:    Code,
-		StateID: StateID,
-		// Accuracy:  int32(Accuracy),
-		// AreaCode:  AreaCode,
-		// City:      City,
-		// Lat:       Lat,
-		// Lon:       Lon,
-		// StateAbbr: StateAbbr,
-		// StateName: StateName,
-	}, nil
+	return &postcode, nil
 }
 
 //  func getRecentSearches(db *sql.DB, limit int) []Searches {

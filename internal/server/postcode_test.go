@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/philgresh/zipcode-timezone/internal/model"
@@ -28,15 +29,15 @@ func TestGetPostcode(t *testing.T) {
 			desc:        "returns a postcode if it exists",
 			postcodeArg: "94108",
 			expectedPostcode: &model.Postcode{
-				ID:      "4251",
-				Code:    "94108",
-				StateID: 5,
-				// City:      "San Francisco",
-				// Lat:       37.7929,
-				// Lon:       -122.4079,
-				// Accuracy:  4,
-				// StateAbbr: "CA",
-				// StateName: "California",
+				ID:        4251,
+				Code:      stringToNullString("94108"),
+				StateID:   5,
+				City:      stringToNullString("San Francisco"),
+				Lat:       37.7929,
+				Lon:       -122.4079,
+				Accuracy:  4,
+				StateAbbr: stringToNullString("CA"),
+				StateName: stringToNullString("California"),
 			},
 		},
 	}
@@ -54,5 +55,12 @@ func TestGetPostcode(t *testing.T) {
 			}
 			require.Equal(t, tc.expectedPostcode, pc)
 		})
+	}
+}
+
+func stringToNullString(s string) sql.NullString {
+	return sql.NullString{
+		String: s,
+		Valid:  true,
 	}
 }
