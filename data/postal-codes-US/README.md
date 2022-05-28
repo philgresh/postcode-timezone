@@ -1,1 +1,0 @@
-Zipcode data provided by [Free Zipcode Data](https://github.com/midwire/free_zipcode_data), [licensed](https://github.com/midwire/free_zipcode_data/blob/develop/LICENSE.md) under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/), carried forward from [GeoNames](http://www.geonames.org/).
