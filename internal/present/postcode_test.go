@@ -1,34 +1,25 @@
-package server
+package present
 
 import (
-	"context"
 	"database/sql"
 	"testing"
 
-	"github.com/philgresh/zipcode-timezone/internal/model"
+	"github.com/philgresh/postcode-timezone/api"
+	"github.com/philgresh/postcode-timezone/internal/model"
 	"github.com/stretchr/testify/require"
+	"googlemaps.github.io/maps"
 )
 
 func TestGetPostcode(t *testing.T) {
 	testcases := []struct {
 		desc             string
-		postcodeArg      string
+		modelPostcode    *model.Postcode
+		expectedPostcode *api.Postcode
 		expectedErr      string
-		expectedPostcode *model.Postcode
 	}{
 		{
-			desc:        "returns an error if no postcode arg is provided",
-			expectedErr: "unable to get postcode from DB, postcode arg is required",
-		},
-		{
-			desc:        "returns an error if the postcode does not exist",
-			expectedErr: "unable to get postcode from DB, postcode does not exist",
-			postcodeArg: "00000",
-		},
-		{
-			desc:        "returns a postcode if it exists",
-			postcodeArg: "94108",
-			expectedPostcode: &model.Postcode{
+			desc: "successfully converts a model Postcode to an Postcode",
+			modelPostcode: &model.Postcode{
 				ID:        4251,
 				Code:      stringToNullString("94108"),
 				StateID:   5,
@@ -39,21 +30,28 @@ func TestGetPostcode(t *testing.T) {
 				StateAbbr: stringToNullString("CA"),
 				StateName: stringToNullString("California"),
 			},
+			expectedPostcode: &api.Postcode{
+				City: "San Francisco",
+				Location: &maps.LatLng{
+					Lat: 37.7929,
+					Lng: -122.4079,
+				},
+				Postcode: "94108",
+			},
 		},
 	}
 
 	for _, tc := range testcases {
 		tc := tc
-		ctx := context.Background()
 
 		t.Run(tc.desc, func(t *testing.T) {
-			pc, err := GetPostcode(ctx, tc.postcodeArg)
+			Postcode, err := ModelPostcodeToPostcode(tc.modelPostcode)
 			if tc.expectedErr != "" {
-				require.Equal(t, tc.expectedErr, err.Error())
+				require.Equal(t, tc.expectedErr, err)
 			} else {
 				require.Nil(t, err)
+				require.Equal(t, tc.expectedPostcode, Postcode)
 			}
-			require.Equal(t, tc.expectedPostcode, pc)
 		})
 	}
 }

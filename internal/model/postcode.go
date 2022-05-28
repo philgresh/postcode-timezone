@@ -19,6 +19,7 @@ func (p *Postcode) GetID() int32 {
 	if p == nil {
 		return 0
 	}
+
 	return p.ID
 }
 
@@ -26,6 +27,7 @@ func (p *Postcode) GetCode() string {
 	if p == nil {
 		return ""
 	}
+
 	return nullStringToString(p.Code)
 }
 
@@ -33,6 +35,7 @@ func (p *Postcode) GetStateID() int32 {
 	if p == nil {
 		return 0
 	}
+
 	return p.StateID
 }
 
@@ -40,6 +43,7 @@ func (p *Postcode) GetStateAbbr() string {
 	if p == nil {
 		return ""
 	}
+
 	return nullStringToString(p.StateAbbr)
 }
 
@@ -47,6 +51,7 @@ func (p *Postcode) GetStateName() string {
 	if p == nil {
 		return ""
 	}
+
 	return nullStringToString(p.StateName)
 }
 
@@ -54,6 +59,7 @@ func (p *Postcode) GetCity() string {
 	if p == nil {
 		return ""
 	}
+
 	return nullStringToString(p.City)
 }
 
@@ -61,6 +67,7 @@ func (p *Postcode) GetAreaCode() string {
 	if p == nil {
 		return ""
 	}
+
 	return nullStringToString(p.AreaCode)
 }
 
@@ -68,6 +75,7 @@ func (p *Postcode) GetLat() float64 {
 	if p == nil {
 		return 0
 	}
+
 	return p.Lat
 }
 
@@ -75,6 +83,7 @@ func (p *Postcode) GetLon() float64 {
 	if p == nil {
 		return 0
 	}
+
 	return p.Lon
 }
 
@@ -82,6 +91,7 @@ func (p *Postcode) GetAccuracy() int32 {
 	if p == nil {
 		return 0
 	}
+
 	return p.Accuracy
 }
 
@@ -89,5 +99,6 @@ func nullStringToString(ns sql.NullString) string {
 	if !ns.Valid {
 		return ""
 	}
+
 	return ns.String
 }

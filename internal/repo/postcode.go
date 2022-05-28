@@ -1,13 +1,14 @@
-package server
+package repo
 
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/blockloop/scan"
 	_ "github.com/mattn/go-sqlite3" // Initialize go-sqlite3 library
-	"github.com/philgresh/zipcode-timezone/internal/model"
+	"github.com/philgresh/postcode-timezone/internal/model"
 )
 
 const (
@@ -31,7 +32,7 @@ const (
 	`
 )
 
-// GetPostcode
+// GetPostcode attempts to get the given postcode details from the DB.
 func GetPostcode(ctx context.Context, postcodeArg string) (*model.Postcode, error) {
 	if postcodeArg == "" {
 		return nil, fmt.Errorf("%s, postcode arg is required", commonErrorStr)
@@ -39,38 +40,22 @@ func GetPostcode(ctx context.Context, postcodeArg string) (*model.Postcode, erro
 
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
-		return nil, fmt.Errorf("%s, database error: %s", commonErrorStr, err)
+		return nil, fmt.Errorf("%s, database error: %w", commonErrorStr, err)
 	}
 
 	rows, err := db.QueryContext(ctx, getPostcode, postcodeArg)
 	if err != nil {
-		return nil, fmt.Errorf("%s, query row error: %s", commonErrorStr, err)
+		return nil, fmt.Errorf("%s, query row error: %w", commonErrorStr, err)
 	}
 
 	var postcode model.Postcode
 	if err = scan.Row(&postcode, rows); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("%s, postcode does not exist", commonErrorStr)
 		}
-		return nil, fmt.Errorf("%s, query row scan error: %s", commonErrorStr, err)
+
+		return nil, fmt.Errorf("%s, query row scan error: %w", commonErrorStr, err)
 	}
+
 	return &postcode, nil
 }
-
-//  func getRecentSearches(db *sql.DB, limit int) []Searches {
-// 	var searches []Searches
-// 	row, err := db.Query("SELECT * FROM search ORDER BY count LIMIT ?", limit)
-// 	if err != nil {
-// 			log.Fatal(err)
-// 	}
-// 	defer row.Close()
-// 	for row.Next() { // Iterate and fetch the records from result cursor
-// 			item := Searches{}
-// 			err := row.Scan(&item.id, &item.count, &item.search)
-// 			if err != nil {
-// 					log.Fatal(err)
-// 			}
-// 			searches = append(searches, item)
-// 	}
-// 	return searches
-// }

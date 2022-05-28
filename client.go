@@ -1,24 +1,25 @@
-package zipcode_timezone
+package client
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/philgresh/zipcode-timezone/api"
-	"github.com/philgresh/zipcode-timezone/present"
+	"github.com/philgresh/postcode-timezone/api"
+	"github.com/philgresh/postcode-timezone/internal/usecase"
 )
 
 type Client struct {
-	country string
+	country api.Country
 }
 
-// ClientOption is the type of constructor options for NewClient(...).
-type ClientArgs struct {
-	country string
+// Args is the type for Client args.
+type Args struct {
+	country api.Country
 }
 
-// NewClient constructs a new Client which can make requests to the zipcode-timezone DB
-func NewClient(args *ClientArgs) (*Client, error) {
-	if args.GetCountry() == "" {
+// NewClient constructs a new Client which can make requests to the postcode-timezone DB.
+func NewClient(args *Args) (*Client, error) {
+	if args.GetCountry() == api.DoNotUse {
 		return nil, fmt.Errorf("Client cannot be initialized, country required")
 	}
 
@@ -27,17 +28,19 @@ func NewClient(args *ClientArgs) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) GetPostcode(postcode string) (*present.APIPostcode, error) {
-	Postcode, err := api.GetPostcode(c.country, postcode)
+func (c *Client) GetPostcode(ctx context.Context, postcodeArg string) (*api.Postcode, error) {
+	postcode, err := usecase.GetPostcode(ctx, c.country, postcodeArg)
 	if err != nil {
-		return nil, fmt.Errorf("unable to get postcode details, %s", err)
+		return nil, fmt.Errorf("unable to get postcode details, %w", err)
 	}
-	return Postcode, nil
+
+	return postcode, nil
 }
 
-func (args *ClientArgs) GetCountry() string {
+func (args *Args) GetCountry() api.Country {
 	if args == nil {
-		return ""
+		return api.DoNotUse
 	}
+
 	return args.country
 }
