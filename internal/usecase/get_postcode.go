@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"context"
+	"errors"
 	"fmt"
 
 	"github.com/philgresh/postcode-timezone/api"
@@ -9,23 +9,19 @@ import (
 	"github.com/philgresh/postcode-timezone/internal/repo"
 )
 
-func GetPostcode(ctx context.Context, country api.Country, postcodeArg string) (*api.Postcode, error) {
-	if country == api.DoNotUse {
-		return nil, getPostcodeError("supported country required")
-	}
-
+func GetPostcode(postcodeArg string) (*api.Postcode, error) {
 	if postcodeArg == "" {
-		return nil, getPostcodeError("postcode required")
+		return nil, getPostcodeError(errors.New("postcode required"))
 	}
 
-	modelPostcode, err := repo.GetPostcode(ctx, postcodeArg)
+	modelPostcode, err := repo.GetPostcode(postcodeArg)
 	if err != nil {
-		return nil, getPostcodeError(err.Error())
+		return nil, getPostcodeError(err)
 	}
 
 	return present.ModelPostcodeToPostcode(modelPostcode)
 }
 
-func getPostcodeError(s string) error {
-	return fmt.Errorf("unable to get postcode: %s", s)
+func getPostcodeError(e error) error {
+	return fmt.Errorf("Usecase.GetPostcode: unable to get postcode: %w", e)
 }

@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"context"
 	"database/sql"
 	"testing"
 
@@ -18,11 +17,11 @@ func TestGetPostcode(t *testing.T) {
 	}{
 		{
 			desc:        "returns an error if no postcode arg is provided",
-			expectedErr: "unable to get postcode from DB, postcode arg is required",
+			expectedErr: "Repo.GetPostcode: unable to get postcode from DB: postcode arg is required",
 		},
 		{
 			desc:        "returns an error if the postcode does not exist",
-			expectedErr: "unable to get postcode from DB, postcode does not exist",
+			expectedErr: "Repo.GetPostcode: unable to get postcode from DB: postcode '00000' does not exist",
 			postcodeArg: "00000",
 		},
 		{
@@ -44,10 +43,9 @@ func TestGetPostcode(t *testing.T) {
 
 	for _, tc := range testcases {
 		tc := tc
-		ctx := context.Background()
 
 		t.Run(tc.desc, func(t *testing.T) {
-			pc, err := GetPostcode(ctx, tc.postcodeArg)
+			pc, err := GetPostcode(tc.postcodeArg)
 			if tc.expectedErr != "" {
 				require.Equal(t, tc.expectedErr, err.Error())
 			} else {

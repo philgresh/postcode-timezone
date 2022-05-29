@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -12,9 +11,8 @@ import (
 )
 
 const (
-	file           = "../data/db.sqlite3"
-	commonErrorStr = "unable to get postcode from DB"
-	getPostcode    = `
+	file        = "../data/db.sqlite3"
+	getPostcode = `
 		SELECT z.id,
 			z.code,
 			z.state_id,
@@ -33,29 +31,33 @@ const (
 )
 
 // GetPostcode attempts to get the given postcode details from the DB.
-func GetPostcode(ctx context.Context, postcodeArg string) (*model.Postcode, error) {
+func GetPostcode(postcodeArg string) (*model.Postcode, error) {
 	if postcodeArg == "" {
-		return nil, fmt.Errorf("%s, postcode arg is required", commonErrorStr)
+		return nil, getPostcodeError(errors.New("postcode arg is required"))
 	}
 
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
-		return nil, fmt.Errorf("%s, database error: %w", commonErrorStr, err)
+		return nil, getPostcodeError(fmt.Errorf("database error: %w", err))
 	}
 
-	rows, err := db.QueryContext(ctx, getPostcode, postcodeArg)
+	rows, err := db.Query(getPostcode, postcodeArg)
 	if err != nil {
-		return nil, fmt.Errorf("%s, query row error: %w", commonErrorStr, err)
+		return nil, getPostcodeError(fmt.Errorf("query row error: %w", err))
 	}
 
 	var postcode model.Postcode
 	if err = scan.Row(&postcode, rows); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%s, postcode does not exist", commonErrorStr)
+			return nil, getPostcodeError(fmt.Errorf("postcode '%s' does not exist", postcodeArg))
 		}
 
-		return nil, fmt.Errorf("%s, query row scan error: %w", commonErrorStr, err)
+		return nil, getPostcodeError(fmt.Errorf("query row scan error: %w", err))
 	}
 
 	return &postcode, nil
+}
+
+func getPostcodeError(e error) error {
+	return fmt.Errorf("Repo.GetPostcode: unable to get postcode from DB: %w", e)
 }
