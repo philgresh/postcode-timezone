@@ -10,7 +10,7 @@ import (
 
 func ModelPostcodeToPostcode(m *model.Postcode) (*api.Postcode, error) {
 	if m == nil {
-		return nil, fmt.Errorf("unable to convert model postcode details to api postcode details, model object is required")
+		return nil, fmt.Errorf("ModelPostcodeToPostcode: unable to convert model postcode to api postcode, model struct is required")
 	}
 
 	Postcode := &api.Postcode{

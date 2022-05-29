@@ -17,7 +17,7 @@ func NewClient() (*Client, error) {
 func (c *Client) GetPostcode(postcodeArg string) (*api.Postcode, error) {
 	postcode, err := usecase.GetPostcode(postcodeArg)
 	if err != nil {
-		return nil, fmt.Errorf("Client.GetPostcode: unable to get postcode details, %w", err)
+		return nil, fmt.Errorf("[postcode-timezone] Client.GetPostcode: unable to get postcode details, %w", err)
 	}
 
 	return postcode, nil

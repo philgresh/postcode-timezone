@@ -18,6 +18,10 @@ func TestGetPostcode(t *testing.T) {
 		expectedErr      string
 	}{
 		{
+			desc:        "returns an error if the model is not provided",
+			expectedErr: "ModelPostcodeToPostcode: unable to convert model postcode to api postcode, model struct is required",
+		},
+		{
 			desc: "successfully converts a model Postcode to an Postcode",
 			modelPostcode: &model.Postcode{
 				ID:        4251,
@@ -47,7 +51,7 @@ func TestGetPostcode(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			Postcode, err := ModelPostcodeToPostcode(tc.modelPostcode)
 			if tc.expectedErr != "" {
-				require.Equal(t, tc.expectedErr, err)
+				require.Equal(t, tc.expectedErr, err.Error())
 			} else {
 				require.Nil(t, err)
 				require.Equal(t, tc.expectedPostcode, Postcode)
