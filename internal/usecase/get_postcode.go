@@ -10,16 +10,12 @@ import (
 )
 
 func GetPostcode(ctx context.Context, country api.Country, postcodeArg string) (*api.Postcode, error) {
+	if country == api.DoNotUse {
+		return nil, getPostcodeError("supported country required")
+	}
+
 	if postcodeArg == "" {
 		return nil, getPostcodeError("postcode required")
-	}
-
-	if country == api.DoNotUse {
-		return nil, getPostcodeError("country required")
-	}
-
-	if country != api.US {
-		return nil, getPostcodeError("unsupported country")
 	}
 
 	modelPostcode, err := repo.GetPostcode(ctx, postcodeArg)
@@ -31,5 +27,5 @@ func GetPostcode(ctx context.Context, country api.Country, postcodeArg string) (
 }
 
 func getPostcodeError(s string) error {
-	return fmt.Errorf("unable to get postcode : %s", s)
+	return fmt.Errorf("unable to get postcode: %s", s)
 }
