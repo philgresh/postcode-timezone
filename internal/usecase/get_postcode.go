@@ -19,7 +19,12 @@ func GetPostcode(postcodeArg string) (*api.Postcode, error) {
 		return nil, getPostcodeError(err)
 	}
 
-	return present.ModelPostcodeToPostcode(modelPostcode)
+	apiPostcode, err := present.ModelPostcodeToPostcode(modelPostcode)
+	if err != nil {
+		return nil, getPostcodeError(err)
+	}
+
+	return apiPostcode, nil
 }
 
 func getPostcodeError(e error) error {
