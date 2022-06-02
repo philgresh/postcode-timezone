@@ -13,6 +13,7 @@ type Postcode struct {
 	Lat       float64        `db:"lat"`
 	Lon       float64        `db:"lon"`
 	Accuracy  int32          `db:"accuracy"`
+	CountyID  int32          `db:"county_id"`
 }
 
 func (p *Postcode) GetID() int32 {

@@ -56,6 +56,68 @@ func TestGetPostcode(t *testing.T) {
 	}
 }
 
+func TestQueryPostcodeRows(t *testing.T) {
+	testcases := []struct {
+		desc              string
+		queryStr          string
+		args              []any
+		expectedErr       string
+		expectedPostcodes []*model.Postcode
+	}{
+		{
+			desc:        "returns an error if no queryStr arg is provided",
+			expectedErr: "Repo.QueryPostcodeRows: query string is required",
+		},
+		{
+			desc:     "returns a slice of postcodes given a queryStr only",
+			queryStr: "SELECT * FROM zipcodes WHERE code = 94108",
+			expectedPostcodes: []*model.Postcode{
+				{
+					ID:       4251,
+					Code:     stringToNullString("94108"),
+					StateID:  5,
+					City:     stringToNullString("San Francisco"),
+					Lat:      37.7929,
+					Lon:      -122.4079,
+					Accuracy: 4,
+					CountyID: 221,
+				},
+			},
+		},
+		{
+			desc:     "returns a slice of postcodes given a queryStr and args",
+			queryStr: "SELECT * FROM zipcodes WHERE code = ?",
+			args:     []any{"94108"},
+			expectedPostcodes: []*model.Postcode{
+				{
+					ID:       4251,
+					Code:     stringToNullString("94108"),
+					StateID:  5,
+					City:     stringToNullString("San Francisco"),
+					Lat:      37.7929,
+					Lon:      -122.4079,
+					Accuracy: 4,
+					CountyID: 221,
+				},
+			},
+		},
+	}
+
+	for _, tc := range testcases {
+		tc := tc
+
+		t.Run(tc.desc, func(t *testing.T) {
+			pc, err := QueryPostcodeRows(tc.queryStr, tc.args...)
+			if tc.expectedErr != "" {
+				require.Equal(t, tc.expectedErr, err.Error())
+			} else {
+				require.Nil(t, err)
+			}
+			require.Equal(t, tc.expectedPostcodes, pc)
+		})
+	}
+}
+
 func stringToNullString(s string) sql.NullString {
 	return sql.NullString{
 		String: s,
